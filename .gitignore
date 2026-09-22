@@ -1,0 +1,26 @@
+# The reference interpreter. tools/mklua.sh builds Lua 5.1.5 from the
+# official tarball here; it is a build artefact, not a vendored binary.
+/.lua/
+
+# Local agent settings. .claude/settings.json is shared; this is not.
+.claude/settings.local.json
+
+# Emitted artefacts are rebuilt from model/ by the emitters.
+/generated/
+
+# Raw bridge replies live outside the repository (captures.md). Nothing here
+# should ever produce one, and if one appears it is not tracked.
+*.res
+/captures/
+
+# Live-session residue. dcs.log, crash dumps and supervisor zips are never
+# committed; the run ledger carries what a session established.
+*.log
+*.dmp
+/supervisor/
+
+# One-off chunks handed to the executor.
+/tmp/
+
+# Cargo build output.
+/target/

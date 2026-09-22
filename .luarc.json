@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+
+  "runtime.version": "Lua 5.1",
+  "runtime.pathStrict": true,
+  "runtime.path": ["?.lua", "?/init.lua", "instrument/?.lua", "tools/?.lua"],
+
+  "workspace.library": ["types"],
+  "workspace.ignoreDir": [".lua", ".git", "generated", "docs", "model", "observations", "corpus"],
+
+  "diagnostics.globals": [],
+
+  "diagnostics.disable": ["discard-returns"]
+}

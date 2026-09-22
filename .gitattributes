@@ -1,0 +1,15 @@
+# Git's automatic line-ending conversion rewrites bytes on checkout. This
+# project hashes files it tracks: the pinned interpreter tarball, every
+# capture in runs.yaml, the fixture mission, and model/.manifest. A Windows
+# working tree with conversion on would break all of them against a file
+# nobody edited.
+#
+# Turn conversion off for everything. Files stay exactly as committed, on
+# both platforms, and a hash means what it says.
+* -text
+
+# Shell scripts need LF whatever an editor does to them.
+*.sh text eol=lf
+
+# Missions are zip files.
+*.miz binary
