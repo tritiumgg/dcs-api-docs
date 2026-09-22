@@ -119,6 +119,26 @@ count (two tasks per scenario; the 500-record chunk ceiling), and a gate's done-
 the shape of what it prints (`caught: N/N, all planted`) rather than a figure a fixture could
 outgrow.
 
+**Write for people in Simplified Technical English.** The full standard needs its dictionary;
+these rules are what this project takes from it, and they apply to everything a person reads:
+the README, the guides, authored entries, definitions' descriptions, error messages, CLI output,
+pull request bodies, and this file.
+
+- One idea per sentence. Keep a sentence under about twenty words; a procedure step under
+  about twenty-five.
+- Active voice, present tense. "The walker refuses the body", not "the body will be refused".
+- One term, one meaning, one spelling. Once a thing is called the executor, it is never the
+  bridge, the hook, or the server. Define a term where it first appears and then reuse it.
+- Instructions are imperatives, one action per step, in the order the reader performs them.
+  A warning comes before the step it concerns, never after.
+- Say what a thing is or does; do not describe it by what it resembles. No idiom, no metaphor,
+  no humour a translator would lose.
+- Keep the articles and the connecting words. "Read the file" and "the run's row", not
+  "read file" and "run row".
+- Prefer a list to a sentence that carries a series. Prefer a table to a list of pairs.
+- A negative states what happens, not what does not: "the merge reports a conflict", rather
+  than "the merge does not resolve a conflict".
+
 **Quote the document, not your memory of it.** A decision record's `Context` carries the
 specification's own prose, retrieved with `tools/spec.sh read`.
 
