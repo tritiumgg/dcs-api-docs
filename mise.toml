@@ -100,8 +100,7 @@ run = [
   "sh tools/sweep-cover.sh",
   "sh tools/check-lua.sh",
   "mise exec -- lua-language-server --check . --checklevel=Warning",
-  # Every shell script parses as sh.
-  "sh -c 'for f in tools/*.sh .claude/hooks/*.sh; do sh -n \"$f\" || exit 1; done'",
+  "sh tools/shcheck.sh",
   # The Rust workspace, once it exists: format, lint, build, test.
   "sh tools/rustcheck.sh",
 ]

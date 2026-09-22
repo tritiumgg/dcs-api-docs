@@ -32,7 +32,7 @@ jobs:
       - name: Test every hook against its payload
         run: sh tools/hooktest.sh
       - name: Every shell script parses as sh
-        run: for f in tools/*.sh .claude/hooks/*.sh; do sh -n "$f" || exit 1; done
+        run: sh tools/shcheck.sh
 
   # Windows is the only supported host, so there is one job and no matrix:
   # everything past Stage 3 needs a running DCS, which is Windows-only.
