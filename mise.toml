@@ -24,7 +24,13 @@ CARGO_TARGET_DIR = "{{ env.LOCALAPPDATA }}/dcs-api-docs/target"
 # The reference interpreter, built by tools/mklua.sh. mise's lua plugin runs
 # the tarball's makefile and Windows has no make, so the interpreter is built
 # here rather than installed as a [tools] entry.
-_.path = ["{{config_root}}/.lua/bin"]
+#
+# Git's POSIX tools come second. Every task here is `sh tools/<script>`, and
+# PowerShell and cmd have no sh of their own; Git for Windows ships one, with
+# the curl, tar, sha256sum and cygpath the scripts use, and mise puts this on
+# PATH for whichever shell ran it. Windows is the only supported host, so the
+# path is spelled rather than discovered.
+_.path = ["{{config_root}}/.lua/bin", "C:/Program Files/Git/usr/bin"]
 
 [tools]
 # The two language servers. Claude Code's lua-lsp and rust-analyzer-lsp
