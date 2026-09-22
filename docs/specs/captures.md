@@ -10,7 +10,7 @@ document expects to exist, or tells you to create.
 ## 1. The tier that is tracked
 
 **Observations are tracked. Raw replies stay local, in a configured directory outside the
-repository — `../dcs-api-captures-local` by default.**
+repository — `../dcs-api-docs-captures` by default.**
 
 A generation is one collection of every artefact a run leaves behind. The raw replies dominate it;
 the derived observations are a small fraction of the same generation, gzipped.

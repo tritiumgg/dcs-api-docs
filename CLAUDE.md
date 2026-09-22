@@ -1,6 +1,6 @@
-# dcs-api
+# dcs-api-docs
 
-**dcs-api builds a measured model of the parts of the DCS World Lua API a developer actually
+**dcs-api-docs builds a measured model of the parts of the DCS World Lua API a developer actually
 uses, so that an AI agent helping with any scenario in `docs/SCENARIOS.md` can find
 out whether a symbol exists, in which Lua state, and how it behaves, without guessing.** Facts
 come only from runtime measurement inside DCS through `dcs-eval` and from the install's own Lua
@@ -172,7 +172,7 @@ its budgets are this project's.
 Use the executor's names: the executor, never the bridge; `DcsEvalExecutor.lua` is its hook
 file; `a_do_script` is the hop into `missionscripting`, never "the door"; its transport root is
 `<temp>\dcs-eval\`. This project's own resident instrument, the census walker that the
-executor loads, is `DcsApiCensus.lua`, and it is a different file from the executor.
+executor loads, is `DcsApiDocsCensus.lua`, and it is a different file from the executor.
 
 A live measurement needs a person to start DCS and bring it to phase. A spike that needs one
 is scheduled with the maintainer, not attempted alone.
@@ -200,7 +200,7 @@ anything else says nothing. `tools/check-lua.sh` proves what is on PATH.
 
 **Everything that is not in-game Lua is Rust.** The collectors, the driver, the merge, the
 emitters and the benchmark tooling are one Cargo workspace under `crates/`, built to one binary,
-`dcs-api`. The reasons, so nobody re-argues them: the executor's client is a Rust crate
+`dcs-api-docs`. The reasons, so nobody re-argues them: the executor's client is a Rust crate
 (`dcs-eval`) and importing it means no second implementation of its protocol and no second
 interop proof; `full_moon` is the parser that keeps comment trivia and byte spans on Lua 5.1
 source, which the source collectors need; grades, absences, vantage and precedence are enums with

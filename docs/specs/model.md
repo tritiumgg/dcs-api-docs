@@ -142,7 +142,7 @@ sym unplaced:.me_db_api.templates
 ```
 
 `unplaced` means: found in ED's shipped code by a container load, never observed in any running
-state. It is a **measured** place, not a missing one — `dcs-api coverage` can ask which runs had a
+state. It is a **measured** place, not a missing one — `dcs-api-docs coverage` can ask which runs had a
 population that would have seen it. A record moves off `unplaced` the day a census reaches it, and
 that move is a pinned-id change handled by §2.7.
 
@@ -207,7 +207,7 @@ in exactly the situation it exists for. The rules:
 
    A consumer following an old pointer lands on a row that says where the symbol went. A future run
    that computes the retired id as a candidate is refused by ingest.
-4. **A rename is a reviewed event with a gate.** `dcs-api merge` writes `RENAMES.md` — one row per
+4. **A rename is a reviewed event with a gate.** `dcs-api-docs merge` writes `RENAMES.md` — one row per
    id change with the old id, the new id, the reason and the run. `mise run verify` fails when the
    rename count exceeds a committed threshold and no `RENAMES.md` entry explains it. A collector
    regression that re-pins a thousand records fails the build instead of producing a thousand-file
@@ -618,7 +618,7 @@ reproducible.
 Tracking observations rather than raw replies is `captures.md`'s recommendation and its arithmetic:
 the observation tier gzips to a small fraction of the raw `.res` bytes, and the raw tier is the one
 holding unstructured PII. **The raw replies stay outside the repository**, in a configured directory
-defaulting to `../dcs-api-captures-local`, and are never committed (§10).
+defaulting to `../dcs-api-docs-captures`, and are never committed (§10).
 
 ### 4.3 Merge is a pure function
 
@@ -686,7 +686,7 @@ provenance back to the record to save space has the sign wrong.**
   scope is a state-scoped ceiling; untagged on a bit over half of `scripting`'s is not one, and no
   ceiling is ever carried from a previous release — each is re-earned by a check that recomputes the
   totality. Writing `impl: {absent: ceiling, ref: …}` on every record a ceiling covers denormalises a
-  single fact, which is the defect §4.1 removes from evidence. The emitter and `dcs-api coverage`
+  single fact, which is the defect §4.1 removes from evidence. The emitter and `dcs-api-docs coverage`
   join record scope against ceiling scope; the record omits the slot. **A per-symbol ceiling — one
   whose scope is the symbol itself — is written on the record**, because there it is not a
   repetition, and that is the only case in which `{absent: ceiling, ref}` appears on a record.
@@ -779,7 +779,7 @@ unmeasured field would share one spelling, which is the confusion specified abse
 prevent.
 
 `scope` on a run is what makes the first row computable. **"Not yet measured" is a query,
-`dcs-api coverage`, not a belief**: an id is unmeasured for a field when no run declaring that field in
+`dcs-api-docs coverage`, not a belief**: an id is unmeasured for a field when no run declaring that field in
 its manifest has a scope covering the id. That query also produces the denominators nobody has today
 — the fraction of reached nodes with a record, and the fraction of the install's Lua in any run's
 file list.
@@ -1152,16 +1152,16 @@ self-exclusion — because the executor carries bytes and knows nothing about a 
 `index(locator, candidate)` performs one metamethod-mediated read on the progress-file path. `call` is
 the supervised probe path. `survey` is the offline container load.
 
-**One resident source, `DcsApiCensus.lua`, built for `hook` or `export` by a `HOST` constant**, and
+**One resident source, `DcsApiDocsCensus.lua`, built for `hook` or `export` by a `HOST` constant**, and
 the harness tests both builds. Separate per-host instrument files duplicate each other almost
 verbatim (`prior:tools/hooks/DcsApiEval.lua`, `prior:tools/export/DcsApiExport.lua`) and drift apart
-one fix at a time. `DcsApiCensus.lua` is this project's own instrument and is not the executor's
+one fix at a time. `DcsApiDocsCensus.lua` is this project's own instrument and is not the executor's
 `DcsEvalExecutor.lua`, which `../dcs-eval` installs and owns.
 
 **The tooling is Rust**, with `full_moon` as the Lua parser — it keeps comment trivia and byte spans
 and targets Lua 5.1, which is what the cites, fingerprint, comment-span and banner collectors need —
 and the `dcs-eval` client crate for the executor protocol. Everything ships as one binary,
-`dcs-api <verb>`, and every command in this project is run as `mise run <task>`.
+`dcs-api-docs <verb>`, and every command in this project is run as `mise run <task>`.
 
 **Collectors** are pure functions with a manifest:
 
@@ -1232,7 +1232,7 @@ vocabulary:
 | `parked-standin-mp-client` | the export-resident instrument alone, from a connected client |
 | `parked-standin-mp-server` | the same vantage from the server side, where `scripting` is resident |
 
-A session, as the `dcs-api` CLI presents it — `dcs-api plan`, `next`, `done` and `status` are verbs
+A session, as the `dcs-api-docs` CLI presents it — `dcs-api-docs plan`, `next`, `done` and `status` are verbs
 of the one binary a human runs, and the agent path is a Claude Code skill over those same verbs, not
 a second MCP server:
 
@@ -1259,7 +1259,7 @@ be a cross-state call from `hook`, which is barred.
 
 The run row is written `status: planned` before the step and closed after — the same discipline as the
 parks register, so a session that dies leaves a row saying what it was doing. **A session must not end
-parked**; the plan ends with the restore and the register row, and `dcs-api status` reports
+parked**; the plan ends with the restore and the register row, and `dcs-api-docs status` reports
 an outstanding park at the start of the next session.
 
 ### 9.4 Crash tolerance

@@ -1,4 +1,4 @@
-# dcs-api
+# dcs-api-docs
 
 A measured model of the parts of the DCS World Lua API a developer actually uses, packaged so
 that an AI agent helping with a DCS scripting task can find out whether a symbol exists, in

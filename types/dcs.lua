@@ -3,7 +3,7 @@
 --
 -- A ---@meta file rather than a diagnostics.globals list: a globals list
 -- silences a misspelt DCS call along with the right one, while a declaration
--- makes the misspelling a finding. Add here only what DcsApiCensus.lua and
+-- makes the misspelling a finding. Add here only what DcsApiDocsCensus.lua and
 -- the harness actually use. Cataloguing the DCS API is the product, not this
 -- file.
 

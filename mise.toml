@@ -20,7 +20,7 @@ RUSTUP_TOOLCHAIN = ""
 # One build directory for every checkout and worktree of this repository, off
 # the tree. A worktree per task is the working style, and a target directory
 # per worktree means every one rebuilds the workspace from nothing.
-CARGO_TARGET_DIR = "{{ env.LOCALAPPDATA }}/dcs-api/target"
+CARGO_TARGET_DIR = "{{ env.LOCALAPPDATA }}/dcs-api-docs/target"
 # The reference interpreter, built by tools/mklua.sh. mise's lua plugin runs
 # the tarball's makefile and Windows has no make, so the interpreter is built
 # here rather than installed as a [tools] entry.

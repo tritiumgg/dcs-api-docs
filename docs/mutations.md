@@ -54,7 +54,7 @@ Bullets, one per line, each `- name: value`:
 
 Then one or more fenced blocks whose info string is `sweep-edit <path>`:
 
-    ```sweep-edit instrument/DcsApiCensus.lua
+    ```sweep-edit instrument/DcsApiDocsCensus.lua
     -   local chunk, why = loadstring(req.body, chunkname)
     +   local chunk, why = loadstring("\n" .. req.body, chunkname)
     ```
