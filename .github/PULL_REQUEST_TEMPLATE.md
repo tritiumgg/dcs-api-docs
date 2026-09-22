@@ -1,98 +1,73 @@
 ## Summary
 
 <!--
-One to three sentences: what this changes and why it is needed, written for
-someone who has not read the plan. Do not repeat the title. End with what
-the change is reviewed against: the plan task or the decision record.
+One to three sentences: what this changes and why. Name the plan row it closes,
+or say it belongs to no row and give the type it commits under. Do not repeat
+the title.
 -->
 
-## Details
+## Done when
 
 <!--
-Describe behavior, not files. Delete either subsection that is empty.
+The row's done-condition, and what the command printed. Paste the output, not a
+description of it. If the output differs from the row's shape, say where and
+why. Delete the section for a change that closes no row.
 -->
 
-### Visible to users
+```
+$ mise run <task>
+```
+
+## Seen red
 
 <!--
-What a user notices, one bullet each.
+The row's mutation, the red it produced, and the green after the restore. Paste
+all three outputs. Name the entry this adds to docs/mutations.md. A check that
+was not seen red is not evidence, and the row is not closed. Delete the section
+for a row with no mutation.
 -->
 
-### Not visible to users
+```
+$ <mutation applied>
+$ mise run <task>
+$ <restored>
+$ mise run <task>
+```
+
+## Who verified
 
 <!--
-Refactors, dependency bumps, schema and tooling changes, one bullet each,
-with why each changes nothing a user sees.
+One line. An agent observed the printed result; the maintainer reads CI; or a
+person at a live install saw it. For a live session: the DCS build, the launch
+configuration, the vantage, and the run ids the ledger gained.
 -->
 
 ## README
 
 <!--
-Always present. What this change alters in what a user downloads, installs,
-configures or runs, and the README paragraph that now says so. Name any
-"not final" or "planned" note the change takes out. When nothing a user
-sees changed, say so in one sentence.
+Always present. What this change alters in what a consumer installs or runs,
+and the README paragraph that now says so. Name any "not built" line the change
+takes out. When nothing a consumer sees changed, say so in one sentence.
 -->
 
-## Screenshots
+## Not covered
 
 <!--
-One image per change a user sees, with a line naming what to look at. Show
-before and after when the change alters something that already exists.
-Delete the section when nothing visible changed.
+Every part of the row's done-condition these steps did not reach, and where the
+gap is recorded: docs/STATE.md, docs/audit.md, or a later row. Delete the
+section when the steps reach all of it.
 -->
 
-## Testing
+## Departures
 
 <!--
-Numbered steps a reviewer follows, not a record of who has run them. Start
-from a clean checkout — which needs `mise install` and then `mise run
-lua-build` once — and leave out anything CI already runs. Delete the
-section when CI covers everything.
-
-Each step is one full imperative sentence, of two kinds:
-
-  - an action: "Run `mise run check`." "Open a mission with one unit."
-  - a check: "Verify the tail prints one line per frame and no `gap`."
-
-Place a Verify wherever the reviewer needs to know the steps so far worked
-before going on.
-
-Give one numbered list for the common path. Add a heading per platform only
-where the steps differ (Windows in PowerShell, macOS and Linux in bash), and
-repeat nothing the common list covers.
-
-Steps that need DCS go under their own heading: build the artifacts, install
-them into the write directory, edit any files (say which and the exact
-edit), then what to do in DCS, with a Verify after each thing the reviewer
-should see.
--->
-
-1.
-
-### With DCS
-
-1.
-
-### Not covered
-
-<!--
-Every part of the task's completion condition these steps do not reach, and
-where that gap is recorded (STATE.md, an issue, the plan). Delete the
-subsection when the steps reach all of it.
+After the freeze only. Each place this change goes where docs/specs/ did not,
+with the decision record that holds it. Delete the section when there is none.
 -->
 
 ## Notes for reviewers
 
 <!--
-Optional. Where to start, decisions worth challenging, follow-up work left
-out on purpose, anything temporary, and what running the steps produced
-where that matters: a measurement, a log excerpt, a run that failed and why.
-Delete the section when empty.
--->
-
-Closes #NNN
-
-<!--
-Drop the line above when no issue exists.
+Optional. Where to start, a choice worth challenging, follow-up work left out
+on purpose, anything temporary.
 -->

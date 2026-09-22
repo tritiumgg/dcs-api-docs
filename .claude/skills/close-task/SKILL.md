@@ -49,8 +49,9 @@ change; take out any "not built" line it settles.
 Commit in slices if the work is more than one logical change, each
 commit `type(scope): summary` under 72 characters. Push the topic branch. Open the pull request
 with `gh pr create --body-file`, the body following `.github/PULL_REQUEST_TEMPLATE.md`: Summary
-and README are always present; Testing lists the commands from steps 1 and 2 and what they
-printed; Not covered names any part of the done-condition these steps did not reach.
+and README are always present; Done when and Seen red carry the outputs of steps 1 and 2; Who
+verified is one line; Not covered names any part of the done-condition these steps did not
+reach.
 
 Report the pull request as waiting. It lands when the maintainer says so: then rebase onto
 `main`, fast-forward `main`, push, delete the branch. A red CI run is fixed on the branch first.
