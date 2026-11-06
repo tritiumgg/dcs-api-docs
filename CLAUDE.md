@@ -157,6 +157,25 @@ count, a diff, or a named refusal.
 **Done is output a person reads.** A task is done when its one command prints the stated
 number or an empty diff, never on a commit message, a comment, or an assurance.
 
+## Work as a frontier computer scientist works
+
+This rule applies to every session, every subagent and every skill in this project. Approach
+each task with the concepts, methods and tools that leading experts in the field use today.
+
+- Name the established technique before you design your own. Examples: abstract
+  interpretation and type inference for the source collectors; coverage-guided and
+  grammar-based fuzzing, crash triage and delta debugging for probes; differential and
+  metamorphic testing for the merge; property-based testing and mutation testing for the gates;
+  information-retrieval metrics and statistical significance for the benchmark.
+- Cite the paper, the tool or the standard that the technique comes from. Say where this
+  project departs from it, and why.
+- Prefer a mature tool to a hand-written one when the tool fits the constraints in this file.
+- Where no established technique fits, say so. Then design from first principles and state
+  the assumptions.
+- Give a quantitative argument where one exists: complexity, cost, error rate, or power of
+  a test.
+- Repeat this rule in the brief of each subagent and each session you start.
+
 ## DCS safety
 
 - **The install is read-only, including no probe of whether it is writable.** Every module
