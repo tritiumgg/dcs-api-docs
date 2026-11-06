@@ -17,7 +17,13 @@ Scope, set by the maintainer on 2026-11-06:
   (`land.getHeight`, `world.getAirbases`, `Airbase` and `Warehouse` methods).
 - Lua that exists on one map only, under `Mods/terrains/<map>/`, is out, and so are per-map
   values such as the airbases of one map.
-- Module-specific APIs, such as a cockpit's or an avionics' Lua, are out. The unit and weapon
+- The shared modding API is in, by the same rule as terrains: an API that more than one module
+  uses is in, and code that belongs to one module is out. The shared API has three layers, each
+  with a row in Stage 1: the plugin declarations (`declare_plugin`, `make_flyable`,
+  `declare_weapon`, `declare_loadout` and the like), the C/C++ SDK headers under `API/include/`
+  and `API/ExternalFMTemplate/`, and the cockpit and avionics framework (`GetDevice`,
+  `get_param_handle`, `dispatch_action`, `make_default_activity`, `avionics.*`, the code under
+  `Scripts/Aircrafts/_Common/`). One module's own cockpit Lua is out. The unit and weapon
   rows a module adds to `db` are data, kept, and the maintainer decides whether to filter them.
 - The reference databases are in: static object type names, unit types, weapons and CLSIDs,
   countries, `wsTypes`, and the item names `Warehouse` accepts.
@@ -92,6 +98,15 @@ read of `defs/<state>/…lua`, and its index row is `path kind impl arity ship p
 trees sp mp-server mp-client defs`. This plan keeps the query shape and a shorter row (4.1)
 and ships none of the predecessor's data.
 
+### 1.4 The executor and the cockpit states
+
+`../dcs-eval/executor/DcsEvalExecutor.lua` declares the states it answers: `hook`, `gui`,
+`scripting`, `mission`, `config`, `export` and `missionscripting`. A cockpit device's Lua runs
+in a state the executor does not name, so no sitting walks it. Row 1.6 takes that layer from
+call sites instead. If a later executor build lists a cockpit state in its handshake, sitting B
+walks it with two different aircraft in turn and keeps the globals both show, by the two-map
+rule of 2.2.
+
 ---
 
 ## 2. Stages
@@ -124,6 +139,9 @@ driver.
 | 1.1 | `defs-src`: parse every `.lua` under `Scripts/`, `MissionEditor/`, `Config/` with `full_moon`; record each function definition's name, parameter names, arity, variadic flag, file and span, and the comment block directly above it | `dcs-api-docs defs-src` prints `files: F, parse errors: E, definitions: D, with comment: C`; verified by agent | 0.2 | dev |
 | 1.2 | `cites`: every call site of a dotted name in the same trees and in the `mission` table of every shipped `.miz`; per site the file, span, argument count and the literal type of each argument where it is a literal, `?` where it is not; aggregated per callee into a min and max arity and a per-position type set | `dcs-api-docs cites` prints `sites: S (install s1, miz s2), callees: K, with literal types: T`; verified by agent | 0.2 | dev |
 | 1.3 | `vendor-text`: `API/Sim_ControlAPI.md` parsed into per-symbol descriptions and parameter lists, graded `D` | `dcs-api-docs vendor-text` prints `symbols: N, with params: P`; verified by agent | 0.2 | dev |
+| 1.4 | `plugin-decls`: every call site of a plugin declaration function in `entry.lua` and the database scripts under `Mods/` and `CoreMods/`, collected as 1.2 does, with the declaring module as a column; a function called from more than one module is shared and ships; one called from one module only is listed and left out | `dcs-api-docs plugin-decls` prints `sites: S, functions: F, shared: K, single-module: M`; verified by agent | 1.2 | dev |
+| 1.5 | `sdk`: the headers `API/include/Cockpit/ccParametersAPI.h`, `API/include/ed_object_access.h`, `API/include/FM/wHumanCustomPhysicsAPI.h`, `API/include/FM/wHumanCustomPhysicsAPI_ImplementationDeclare.h` and the sources under `API/ExternalFMTemplate/`, parsed with the `tree-sitter-c` grammar into function declarations, their parameters and the comment above each, emitted as `release/sdk/<header>.md` beside the Lua definitions; the preprocessor is not run, so a declaration under a conditional is emitted with its condition as text | `dcs-api-docs sdk` prints `headers: H, declarations: D, with comment: C, parse errors: 0`; verified by agent | 0.2 | dev |
+| 1.6 | `cockpit-framework`: the cockpit and avionics API from static call sites, because the executor declares no cockpit state (1.4); every dotted or bare call under `Scripts/Aircrafts/_Common/` and under each module's `Cockpit/` tree, with the calling module as a column; a function called from `_Common/` or from more than one module is shared and ships, one called from one module only is left out; the `export`-side half of the framework (`GetDevice`, `LoGetAircraftDrawArgumentValue`) comes from the walk in 3.1 | `dcs-api-docs cockpit-framework` prints `sites: S, functions: F, shared: K, single-module: M`; verified by agent | 1.2 | dev |
 
 Techniques. 1.1 is syntactic signature extraction over a concrete syntax tree; `full_moon`
 keeps comment trivia and byte spans on Lua 5.1 source. 1.2 is call-site constraint
@@ -132,7 +150,9 @@ each site contributes one tuple of argument types, a literal's type is known, an
 `?`, and no fixpoint over data flow is computed. That reduction is why the per-position type
 set can hold `?` and why the plan states no coverage figure for it in advance; 1.2 prints the
 figure. Full abstract interpretation is not attempted, because the mission-scripting surface
-has too few sites for it to pay (1.1).
+has too few sites for it to pay (1.1). 1.5 parses C with the `tree-sitter-c` grammar
+(Brunsfeld, tree-sitter), a mature incremental parser; a full C front end such as libclang
+would need the SDK's include paths and is more than four headers justify.
 
 ### Stage 2 — Sitting A: menu and editor
 
@@ -152,14 +172,14 @@ and records the mission's name on the run. The two-map rule does not apply here.
 
 | id | task | done when | needs | runs on |
 |---|---|---|---|---|
-| 3.1 | The walk of `missionscripting` through `a_do_script` and of `export` from the slot, with the same chunk as 2.1 and a string-only return | `walk-ingest` prints the two states' lines as in 2.2; verified by the person at DCS and by agent | 2.2 | DCS+human |
+| 3.1 | The walk of `missionscripting` through `a_do_script` and of `export` from the slot, with the same chunk as 2.1 and a string-only return; the operator reads `dcs_status`'s handshake and records whether a cockpit state is listed (1.4) | `walk-ingest` prints the two states' lines as in 2.2; verified by the person at DCS and by agent | 2.2 | DCS+human |
 | 3.2 | The bounded probe (section 4): `probe-plan` writes one chunk per candidate from the cited argument shapes, safest first, with every candidate carrying its effect class and the deny list applied; the operator sends chunks one at a time; a crash names the killer from the executor's unbalanced `B\|` marker; at most two restarts in the sitting; `probe-ingest` writes the outcomes | `dcs-api-docs probe-plan` prints `candidates: N, denied: D, by shape: cited c, bare b`; `probe-ingest` prints `probed: P, answered: A, errored: E, killers: K, unknown: N-P`; verified by the person at DCS and by agent | 1.2, 3.1 | DCS+human |
 
 ### Stage 4 — Emit, describe, ship
 
 | id | task | done when | needs | runs on |
 |---|---|---|---|---|
-| 4.1 | `emit`: joins the observations and the offline collections by `state:path` and writes `release/index/<state>.tsv` with the row `path kind impl arity states hazard grade defs`, `release/defs/<state>/<root>.lua` as LuaLS text, and `release/data/<table>.tsv`; each definition carries its source span or its probe outcome, and a fact nobody measured is written `unknown` | `dcs-api-docs emit` prints `index rows: R, defs: F, parse errors: 0, data tables: T`; `mise run check` runs `lua-language-server --check` over `release/defs` and prints `0 errors`; verified by CI | 2.2, 2.3, 3.1, 3.2, 1.1, 1.2, 1.3 | dev |
+| 4.1 | `emit`: joins the observations and the offline collections by `state:path` and writes `release/index/<state>.tsv` with the row `path kind impl arity states hazard grade defs`, `release/defs/<state>/<root>.lua` as LuaLS text, `release/data/<table>.tsv`, the shared modding functions of 1.4 and 1.6 as `release/defs/modding/<root>.lua`, and the SDK section of 1.5 beside them; each definition carries its source span or its probe outcome, and a fact nobody measured is written `unknown` | `dcs-api-docs emit` prints `index rows: R, defs: F, parse errors: 0, data tables: T`; `mise run check` runs `lua-language-server --check` over `release/defs` and prints `0 errors`; verified by CI | 2.2, 2.3, 3.1, 3.2, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6 | dev |
 | 4.2 | `describe` (section 5): an agent writes a description for each symbol from the evidence the pipeline holds and nothing else, each description citing its evidence, or writes `no description: evidence insufficient`; `describe --audit N` prints a seeded random sample of N descriptions beside their cited evidence for the maintainer to read | `dcs-api-docs describe --check` prints `symbols: S, described: D, insufficient: I, uncited: 0`; the maintainer reads the audit sample; verified by CI for `uncited: 0` and by the maintainer for the sample | 4.1 | dev |
 | 4.3 | The skill package, `.claude/skills/dcs-api-lookup/`: the query procedure as `SKILL.md`, the index, the defs and the data tables beside it; the README says what a consumer installs and runs and takes out every "not built" line this plan settles | a fresh checkout with only the package answers `does Group.getByName exist in missionscripting, and what does it take` in one grep and one bounded read; `mise run check` passes; verified by agent and by the maintainer | 4.2 | dev |
 
@@ -277,6 +297,7 @@ last column says what a drop costs in coverage or in correctness.
 | The index row and the one-grep-one-read query | model §8, the predecessor's skill | keep, shorter row | the vantage and release columns go |
 | Scenario-driven ranking of what gets described | `docs/SCENARIOS.md` | shrink: the scenario namespaces order the probe and the descriptions; no cut rule, no coverage denominator per scenario | everything reached ships; most GUI rows ship undescribed |
 | The two-map comparison for terrain-specific globals | new | keep | one extra walk in sitting A |
+| The two-module cross-check for the shared modding API | new | keep | a column and a filter in 1.4 and 1.6; no sitting |
 | The fixture mission, matched by name and hash | old 3.2, captures §3 | shrink: any mission, its name recorded on the run | a probe outcome that depends on the mission is not detected; the probe surface here is small |
 | Park and restore of Saved Games | old 3.1, 3.7 | drop | the walker and the probes write nothing under Saved Games; the executor's own files are its concern |
 | The crash supervisor that relaunches DCS | old 3.5 | drop | the operator relaunches; two restarts per sitting |

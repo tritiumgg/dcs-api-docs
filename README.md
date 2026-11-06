@@ -16,12 +16,15 @@ which Lua state, and how it behaves, without guessing.
 - `defs/` — LuaLS definition files, one bounded read per symbol, with the declaration span or
   the probe outcome, the build it was measured on, a sample of call sites, and a description
   graded `D` where it is ED's own text and `A` where an agent wrote it from cited evidence.
+- `defs/modding/` — the shared modding API: plugin declarations and the cockpit and avionics
+  framework that more than one module uses, from call sites in the install.
+- `sdk/` — the C/C++ SDK headers shipped under `API/`, one reference page per header.
 - `data/` — the reference databases (unit types, weapons and CLSIDs, static object types,
   countries, `wsTypes`, warehouse item names) as one TSV per table, for lookups.
 
 Every fact carries which sitting and state measured it. A fact nobody measured is written
 `unknown`, and so is one the sources disagree on. No documentation creates a symbol. Single-player
-states only; terrain-specific and module-specific Lua are out of scope.
+states only; terrain-specific Lua and one module's own Lua are out of scope.
 
 ## Install
 

@@ -26,7 +26,7 @@ person at a live install. Empty this when the task closes.*
 
 ## Just finished
 
-- **The lean plan** (`docs/PLAN.md`): five stages, two DCS sittings, one crate; the discovery evidence and the keep/shrink/drop table are in it. `CLAUDE.md`, `docs/SCENARIOS.md`, `docs/audit.md` and the spec heads edited to match.
+- **The lean plan** (`docs/PLAN.md`): five stages, two DCS sittings, one crate, the shared modding API in three offline rows; the discovery evidence and the keep/shrink/drop table are in it. `CLAUDE.md`, `docs/SCENARIOS.md`, `docs/audit.md` and the spec heads edited to match.
 - **The documents corrected in place** and the scaffold: hooks, gates, `mise run check`, CI.
 
 *The last three at most, one line each. Git log holds the rest.*
