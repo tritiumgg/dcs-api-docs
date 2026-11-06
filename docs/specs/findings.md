@@ -1,4 +1,7 @@
 **Citation convention.** A path written `prior:<path>` is a file in the superseded repository
+> **Scope note, 2026-11-06.** The findings are measured facts and stand. Where one speaks of
+> tiers, vantages, or the crash-tolerant probe path, `docs/PLAN.md` section 4 says what is built.
+
 this project replaces, cited as evidence only. **Nothing in this repository reads one.** A bare
 install path such as `Scripts/class.lua:1-44` is a file under the DCS installation, cited as the
 place a finding was measured. An unprefixed repository path is a file this project expects to exist.
