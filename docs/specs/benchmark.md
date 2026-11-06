@@ -1,5 +1,10 @@
 # The benchmark, for the rewrite
 
+> **Scope note, 2026-11-06.** `docs/PLAN.md` does not build this instrument. Nothing below is
+> scheduled; the plan keeps one fixed consumer question (its row 4.3) in its place. The text stays
+> as the record of what was intended.
+
+
 This is the instrument, for a project rebuilt from scratch: a new repository, a new key grammar,
 and a benchmark written here from nothing.
 

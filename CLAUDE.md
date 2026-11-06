@@ -6,9 +6,9 @@ out whether a symbol exists, in which Lua state, and how it behaves, without gue
 come only from runtime measurement inside DCS through `dcs-eval` and from the install's own Lua
 source. Documentation may describe a fact; it may never create one. The product is one release
 artefact, an index and LuaLS definitions plus the reference data as rows, shipped as a Claude
-skill and queryable in one grep and one bounded read. Everything reachable is measured; what
-ships is what a scenario reaches; what gets described is what scenarios use most. Release 1 is
-every single-player state; multiplayer client and server follow.
+skill and queryable in one grep and one bounded read. Everything reachable is measured and
+ships; the scenario namespaces order what gets probed and described first. The release covers
+every single-player state. Multiplayer client and server are out of scope.
 
 **Measurement takes precedence over memory.** Anything an agent knows about DCS and did not
 measure is a hypothesis: it enters the authored layer as a dated claim, becomes a probe where
@@ -25,11 +25,12 @@ README.md              what a consumer installs and runs; "not built" lines allo
 docs/
   STATE.md             the handoff between sessions. Read it first
   PLAN.md              build order, stages, spikes, decisions. Not frozen
-  SCENARIOS.md         who the model is for; the cut, coverage and benchmark quota read it
+  SCENARIOS.md         who the model is for; the probe order and the descriptions read it
   AUTHORED.md          the documentation layer on top of the model
   audit.md             what the specifications and the plan still disagree about
   mutations.md         every control, its mutation, the red it produced
-  specs/               model.md findings.md captures.md benchmark.md; frozen at the first build commit
+  specs/               model.md findings.md captures.md benchmark.md; frozen at the first build
+                       commit; each opens with a scope note saying what the plan does not build
   decisions/           where the build goes somewhere the specs did not
   conventions/         how a decision record is written
 tools/                 spec.sh statecheck.sh nospecrefs.sh hooktest.sh mklua.sh check-lua.sh
@@ -45,9 +46,8 @@ and asks the verify runner which gates are green; `mise run progress next` print
 needs are all green. `/task` starts from that, and asks the maintainer when more than one row is
 ready or the only ready row needs a person at DCS.
 
-The Rust workspace (`crates/`), `instrument/` (the in-game Lua), `model/`, `observations/`,
-`names/`, `candidates/`, `authored/`, `corpus/golden/` and `bench/` are laid out as
-`docs/specs/model.md` §7 and `docs/specs/benchmark.md` say; none exists until its plan task.
+The Rust crate, `instrument/` (the in-game Lua), `observations/` and `release/` are laid out as
+`docs/PLAN.md` says; none exists until its plan row.
 
 ## `docs/STATE.md` is the handoff between sessions
 
@@ -149,10 +149,10 @@ whether it needs a maintainer reading a CI result (CI runs on every pull request
 can see it. Write it in `docs/STATE.md` under the task. An agent that skips this declares
 victory on something it never observed.
 
-**A check that has never been seen red is not evidence.** Every task that builds a control
-breaks it on purpose once, watches it fail, and records the mutation and the red in
-`docs/mutations.md` in the same pull request. "Green" never means "exited 0": a gate prints a
-count, a diff, or a named refusal.
+**"Green" never means "exited 0".** A gate prints a count, a diff, or a named refusal, and an
+agent reads it. The scrub control is broken on purpose once and seen red, recorded in
+`docs/mutations.md`; no other control needs that ritual, because each prints a figure a reader
+checks.
 
 **Done is output a person reads.** A task is done when its one command prints the stated
 number or an empty diff, never on a commit message, a comment, or an assurance.
@@ -165,8 +165,8 @@ each task with the concepts, methods and tools that leading experts in the field
 - Name the established technique before you design your own. Examples: abstract
   interpretation and type inference for the source collectors; coverage-guided and
   grammar-based fuzzing, crash triage and delta debugging for probes; differential and
-  metamorphic testing for the merge; property-based testing and mutation testing for the gates;
-  information-retrieval metrics and statistical significance for the benchmark.
+  metamorphic testing for the merge; property-based testing for the gates; crash triage and a
+  restart budget for the probes.
 - Cite the paper, the tool or the standard that the technique comes from. Say where this
   project departs from it, and why.
 - Prefer a mature tool to a hand-written one when the tool fits the constraints in this file.
@@ -180,21 +180,20 @@ each task with the concepts, methods and tools that leading experts in the field
 
 - **The install is read-only, including no probe of whether it is writable.** Every module
   that touches the install path goes through one read-only facade.
-- **Saved Games is written only under park and restore.** A displaced file is registered and
-  moved, never deleted or overwritten in place, and a session never ends parked.
+- **Nothing this project runs writes under Saved Games.** The executor owns its own files there.
 - **No cross-state call, ever.** A locator in one state is never dereferenced from another.
   The one crossing is `net.dostring_in` and `a_do_script`, through the executor, string return
   only.
-- **A probe carries an effect class**, cites the call site its arguments came from, and the
-  deny classes (write, exit, network, state-mutating) are refused before anything runs. A
-  dictionary sweep is barred.
+- **A probe carries an effect class**, takes its arguments from a cited call site or sends a
+  bare call once for the error text, and the deny classes (write, exit, network, state-mutating)
+  are refused before anything runs. A generated argument space is barred.
 - **The scrub runs in the walker from its first line**: the username, reversed, in 8.3 short
   form, and any path-shaped string, in keys and in values, replaced by a typed placeholder and
   never by `nil`. Raw replies live outside the repository and are never committed.
-- **`model/` is generated.** A hand edit is refused. `observations/` are immutable and named
-  for their run. `names/` is append-only.
-- **Collect only against the fixture mission.** The driver refuses a session whose loaded
-  mission is not it.
+- **`release/` is generated.** A hand edit is refused. `observations/` are immutable and named
+  for their sitting, state and map.
+- **Record the loaded mission's name on every sitting B run.** Any mission with a controllable
+  aircraft serves.
 - **Calling into DCS can end it.** A chunk that crashes the game is named by the marker
   discipline and carried forward as a killer, never re-probed.
 
@@ -237,14 +236,11 @@ untrusted, run `mise trust`.
 changes what `%.14g` prints, and LuaJIT counts debug hooks differently. A green run under
 anything else says nothing. `tools/check-lua.sh` proves what is on PATH.
 
-**Everything that is not in-game Lua is Rust.** The collectors, the driver, the merge, the
-emitters and the benchmark tooling are one Cargo workspace under `crates/`, built to one binary,
-`dcs-api-docs`. The reasons, so nobody re-argues them: the executor's client is a Rust crate
+**Everything that is not in-game Lua is Rust.** The collectors, the ingest and the emitter are
+one crate, built to one binary, `dcs-api-docs`. The reasons, so nobody re-argues them: the executor's client is a Rust crate
 (`dcs-eval`) and importing it means no second implementation of its protocol and no second
 interop proof; `full_moon` is the parser that keeps comment trivia and byte spans on Lua 5.1
-source, which the source collectors need; grades, absences, vantage and precedence are enums with
-exhaustive matches, so the model's invariants are checked by the compiler rather than by
-review; and the maintainer already runs this toolchain in the sibling project. The version and
+source, which the source collectors need; and the maintainer already runs this toolchain in the sibling project. The version and
 its components live in `rust-toolchain.toml` and nowhere else; `mise use rust@` breaks it.
 
 **Language servers.** Both are pinned in `mise.toml` and enabled in `.claude/settings.json`.
@@ -273,7 +269,7 @@ branches switched in one checkout: a session that switches branches under anothe
 feet corrupts both handoffs. The `task` skill offers a worktree when another task is already in
 progress, and a fan-out agent that edits runs in one of its own. What a worktree needs to know:
 `mise run lua-build` once per worktree (the interpreter is gitignored build output); the Cargo
-target directory is shared across worktrees through `mise.toml` so the workspace builds once;
+target directory is shared across worktrees through `mise.toml` so the crate builds once;
 the hooks read `CLAUDE_PROJECT_DIR`, so they guard the worktree they run in; and `docs/STATE.md`
 is one file on `main` that every worktree's branch edits, so the handoff commit is rebased first
 and says which task it is about.

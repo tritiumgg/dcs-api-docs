@@ -1,5 +1,14 @@
 # The model and its collectors
 
+> **Scope note, 2026-11-06.** `docs/PLAN.md` builds a smaller model than this document describes.
+> Not built: the name ledger (§2.3, §2.7), the slot encoding and merge precedence (§3.2, §4.3), the
+> run ledger and collector manifests (§4.1, §9.1), the four absence spellings (§5; one `unknown`
+> spelling replaces them), the `model/` record storage (§7), the session vocabulary and park and
+> restore (§9.3), the crash supervisor (§9.4; the executor's markers and a restart budget replace
+> it), and the golden-corpus rederive (§9.5). Kept: the locator shape as `state:path` (§2.2), the
+> consumer surface (§8), the walk (§9.6), the scrub (§10), and the vendor-text rules (§14).
+
+
 The settled model design for the rewrite. Every decision below is justified on its own evidence, in
 the section where it is made.
 

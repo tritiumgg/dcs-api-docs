@@ -16,11 +16,11 @@ Each of these is the maintainer's call. The documents do not assume either answe
 
 | Subject | The question | Where it is settled |
 |---|---|---|
-| Airbase identity | `Mods/terrains/*/` holds the airbase tables and `Mods/` is excluded from the census. Either exactly that path is admitted as a named exception, or airbase identity is recorded as a measured absence citing the exclusion, and the reference-data emitter ships no `airbases` table until then. | `docs/specs/model.md` §13 and `docs/SCENARIOS.md` §6, in the same edit |
-| The benchmark threshold | N is unset until the first card exists; the first card prints ungated and N is then written to `bench/threshold` and the release table in `docs/PLAN.md`. | `docs/PLAN.md` §6, by the maintainer, after B.10's first run |
-| What a release boundary runs | The default is the whole live pool plus the controls, at the repeats rule. The maintainer may name a subset, and the release document and the card must then say which tasks it holds. | `docs/specs/benchmark.md` §11 already permits it; the choice is recorded in the release document |
-| Scenario 1's state | The findings place the mission-scripting surface in `mission`; the transport's `server` name resolves to `scripting`. The census of both states settles it and the root gate prints the answer. | The Stage 4 sessions and the root gate, not a person |
+| Scenario 1's state | The findings place the mission-scripting surface in `mission`; the transport's `server` name resolves to `scripting`. The census of both states settles it and the root gate prints the answer. | Sitting A's walk of both states (`docs/PLAN.md` row 2.2), not a person |
 
 ## Resolved
 
-Nothing yet. Rows arrive with the freeze.
+| Subject | The answer | Where |
+|---|---|---|
+| Airbase identity | Per-map values are out of scope (2026-11-06). `world.getAirbases` and the `Airbase` methods are documented as APIs; no `airbases` table ships | `docs/PLAN.md`, scope |
+| The benchmark threshold and what a release boundary runs | The benchmark is not built | `docs/PLAN.md` section 7 |

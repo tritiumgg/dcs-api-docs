@@ -1,5 +1,9 @@
 # Captures: track the observation tier, filter in the walker
 
+> **Scope note, 2026-11-06.** `docs/PLAN.md` keeps the scrub and the tracked-tier rule here and
+> drops the fixture mission rule of §3: any mission serves, and its name is recorded on the run.
+
+
 **Citation convention.** A path written `prior:<path>` is a file in the superseded repository
 this project replaces, cited as evidence and readable there on demand. **Nothing in the new
 repository reads one at build time.** An unprefixed path is a file in the new repository — one this
