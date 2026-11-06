@@ -207,17 +207,24 @@ Order of evidence, cheapest and safest first:
 3. **Bare call for the error text.** A C function with no site and no cite is called with no
    arguments, once, to read the argument-check error. This is the riskiest shape (1.2, about
    1.6% crashes), so it comes last and is bounded by the restart budget.
-4. **Unknown.** A function the budget does not reach, or a killer, ships as
-   `signature unknown`, which is a valid outcome.
+4. **Unknown.** A function the budget does not reach, or one whose every tried shape crashed,
+   ships as `signature unknown`, which is a valid outcome.
 
 Rules, each one measured in the predecessor's records:
 
 - One call per chunk. The executor writes `B|<id>` before the chunk and `O|<id>` after; a
   crash leaves `B|` unbalanced and names the killer.
-- A killer is recorded under `observations/killers.tsv` and never retried, in any build.
+- A crash is recorded against the argument shape that was sent, in `observations/killers.tsv`
+  (function, state, shape, build). That shape is never sent again. The function itself may be
+  retried with a different, typed shape: a string where the cited sites or the error text show
+  a string, two distinct points instead of one repeated, a mission loaded for `land.*`. Every
+  killer in the predecessor's records was a bare or ill-typed call that later worked with the
+  right arguments, so the binding, not the API, is what crashes. A retry costs a restart when
+  it is wrong, so the restart budget bounds it, not a name list.
 - Every candidate carries an effect class (`read`, `sim-write`, `barred`), and the deny
   classes (write, exit, network, state-mutating) are refused by `probe-plan` before anything
-  runs. The predecessor's `barred` list and killer list are the deny list's seed.
+  runs. The predecessor's `barred` list seeds the deny classes; its killer list seeds
+  `killers.tsv` as shapes, not as names.
 - A string parameter gets a string argument; a bare call is never sent where the cited sites
   show a string at any position.
 - Nothing returns a nested table across states; a probe returns one string.
@@ -273,7 +280,7 @@ to `insufficient`.
 | `release/` is generated; a hand edit is refused | 4.1 |
 | No cross-state call; a probe returns a string | 3.2 |
 | A probe cites a call site or is a bare call; every candidate carries an effect class; the deny classes are refused | 3.2 |
-| A killer is never retried | 3.2 |
+| A crashing argument shape is never resent; the function is retried only with a typed shape | 3.2 |
 | A fact nobody measured is `unknown`; no description without cited evidence | 4.1, 4.2 |
 | Lua is 5.1.5 PUC-Rio for the harness; `tools/check-lua.sh` proves it | 2.1 |
 | Conventional Commits, one pull request per row, landing is the maintainer's call | `CLAUDE.md` |
@@ -289,7 +296,7 @@ last column says what a drop costs in coverage or in correctness.
 |---|---|---|---|
 | The scrub in the walker, typed placeholders, planted-PII control | old 1.3, model §10 | keep | the one control that prevents a leak; small Lua |
 | `B\|`/`O\|` marker discipline, killer named from the unbalanced marker | old 1.6, 3.5, model §9.4 | keep, as the executor's own `events.log` | nothing to build |
-| Killers carried forward, never re-probed | old D010 | keep | one TSV |
+| Killers carried forward, never re-probed | old D010 | shrink: the crashing shape is carried forward and never resent; the function is retried with a typed shape | every recorded killer was an argument fault, so a name ban leaves working APIs undocumented |
 | Effect classes and the deny list on probes | old C.1, D009 | keep | a column and a filter in `probe-plan` |
 | A probe cites a call site; no dictionary sweep | old D009, model §9.2 | shrink: cited first, then one bare call per function under a restart budget | a strict ban leaves most of the mission-scripting surface unprobed, because almost nothing cites it (1.1) |
 | The cites collector over ED's Lua and the shipped `.miz` scripts | old 5.5 | keep | the main offline signal for the hook surface |
@@ -323,5 +330,5 @@ last column says what a drop costs in coverage or in correctness.
 
 - Whether to filter the `db` rows a module declares, or ship them with the module column.
 - Which mission to load for sitting B.
-- Whether the predecessor's killer and barred lists may seed the deny list (section 4 assumes
-  yes, as a safety input, not as a fact).
+- Whether the predecessor's barred list may seed the deny classes and its killer list the
+  crashing shapes (section 4 assumes yes, as a safety input, not as a fact).

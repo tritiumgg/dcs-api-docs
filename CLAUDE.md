@@ -195,7 +195,8 @@ each task with the concepts, methods and tools that leading experts in the field
 - **Record the loaded mission's name on every sitting B run.** Any mission with a controllable
   aircraft serves.
 - **Calling into DCS can end it.** A chunk that crashes the game is named by the marker
-  discipline and carried forward as a killer, never re-probed.
+  discipline; the argument shape it sent is recorded and never sent again, and the function is
+  retried only with a typed shape, under the sitting's restart budget.
 
 ## The executor is a dependency, and a tool
 
