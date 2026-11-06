@@ -42,14 +42,18 @@ read-only, with the commands shown so a later run re-derives every figure.
 | The core `db` source | `ls Scripts/Database` | `Scripts/Database.edce` is encrypted; only `db_countries.lua`, `wsTypes.lua` and `Troops/` are readable. Weapon and unit declarations are readable under `CoreMods/` and `Mods/` (`declare_weapon`, `declare_loadout`, 143 distinct CLSID literals) |
 | Terrain Lua | `find Mods/terrains/<map> -name '*.lua'` | per map, `Beacons.lua`, `NotInstances.lua`, `Radio.lua`; no global defined there is referenced from `Scripts/` |
 | Module Lua | `find Mods/aircraft -name '*.lua'` | 5,043 files, most under `Cockpit/`; none carries a mission-visible API |
+| The binaries, `bin` and `bin-mt`, build 2.9.31.29434 | a byte scan for Lua C API imports and for API names, ASCII and UTF-16 | `Scripting.dll`, `WorldGeneral.dll`, `edCore.dll` and others import `luaL_register`; `addStaticObject`, `getAirbases`, `dostring_in`, `outTextForCoalition`, `setUserCallbacks`, `LoGetSelfData` appear in no binary as plain text, so the registration tables are packed or encrypted and a static `luaL_Reg` extraction cannot recover the API; `bad argument` appears only in `lua.dll`, so the bindings use the stock `luaL_check*` functions and a bare call returns the standard `bad argument #n to 'f' (T expected, got U)` text |
 
 What this means for the plan:
 
 - Offline parsing covers Lua-defined functions well and the hook and GUI C surface partly. It
   covers the mission-scripting C surface poorly: ED's own Lua almost never calls it, and the
   shipped missions reach only the names 1.2 prints.
+- Function names come from the runtime walk and from nowhere else; the binaries do not yield
+  them.
 - Signature evidence for most mission-scripting C functions therefore comes from measurement
-  inside DCS, or stays unknown.
+  inside DCS, or stays unknown. The binary scan supports the error-text method: the error
+  names the position and the expected type.
 - The `db` rows come from a runtime dump in the editor state, because the source is encrypted.
 - The terrain and module exclusions are cheap to apply by path, and a two-map comparison at
   the sitting settles which runtime globals are terrain-specific.
